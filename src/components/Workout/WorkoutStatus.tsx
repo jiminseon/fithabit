@@ -2,13 +2,14 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface WorkoutStatusProps {
   onStatusChange?: (status: 'success' | 'fail' | null) => void;
 }
 
 export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
-  const [status, setStatus] = useState<'success' | 'fail' | null>(null);
+  const [status, setStatus] = useLocalStorage<'success' | 'fail' | null>('workoutStatusComponent', null);
   const [showMission, setShowMission] = useState(false);
   const [missionCompleted, setMissionCompleted] = useState(false);
   

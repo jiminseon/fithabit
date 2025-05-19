@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface WorkoutTask {
   id: string;
@@ -17,7 +18,7 @@ interface WorkoutTask {
 
 const Home = () => {
   const [workoutStatus, setWorkoutStatus] = useState<'success' | 'fail' | null>(null);
-  const [workoutTasks, setWorkoutTasks] = useState<WorkoutTask[]>([
+  const [workoutTasks, setWorkoutTasks] = useLocalStorage<WorkoutTask[]>('workoutTasks', [
     { 
       id: '1', 
       name: '30분 달리기', 
@@ -61,6 +62,9 @@ const Home = () => {
     );
   };
 
+  // Check if all tasks are completed
+  const allTasksCompleted = workoutTasks.every(task => task.completed);
+
   // Sample data
   const mockInBodyData = {
     weight: 68,
@@ -73,13 +77,10 @@ const Home = () => {
     nextScheduled: '2023-06-10',
   };
 
-  // Check if all tasks are completed
-  const allTasksCompleted = workoutTasks.every(task => task.completed);
-
   // Effect to set workout status when all tasks are completed
   useEffect(() => {
     if (allTasksCompleted && workoutStatus !== 'success') {
-      setWorkoutStatus('success');
+      // We don't auto-set success, just enable the button
     }
   }, [allTasksCompleted, workoutTasks, workoutStatus]);
 
@@ -118,17 +119,7 @@ const Home = () => {
     if (savedStatus) {
       setWorkoutStatus(savedStatus as 'success' | 'fail' | null);
     }
-    
-    const savedTasks = localStorage.getItem('workoutTasks');
-    if (savedTasks) {
-      setWorkoutTasks(JSON.parse(savedTasks));
-    }
   }, []);
-
-  // Save tasks to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('workoutTasks', JSON.stringify(workoutTasks));
-  }, [workoutTasks]);
 
   return (
     <Layout>
@@ -200,6 +191,7 @@ const Home = () => {
                     <Button 
                       onClick={markSuccess}
                       className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
+                      disabled={!allTasksCompleted}
                     >
                       성공
                     </Button>

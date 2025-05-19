@@ -5,10 +5,12 @@ import { InBodyStats } from '@/components/InBody/InBodyStats';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
 const InBody = () => {
   // State for inBody data
-  const [inBodyData, setInBodyData] = useState({
+  const [inBodyData, setInBodyData] = useLocalStorage('inBodyData', {
     weight: 68,
     weightGoal: 65,
     muscleMass: 32,
@@ -24,6 +26,14 @@ const InBody = () => {
     weightGoal: inBodyData.weightGoal,
     muscleMassGoal: inBodyData.muscleMassGoal,
     bodyFatGoal: inBodyData.bodyFatGoal,
+  });
+
+  // State for update modal
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [updateForm, setUpdateForm] = useState({
+    weight: inBodyData.weight,
+    muscleMass: inBodyData.muscleMass,
+    bodyFat: inBodyData.bodyFat,
   });
   
   // Mock history data
@@ -44,6 +54,15 @@ const InBody = () => {
       [name]: parseFloat(value) || 0
     }));
   };
+
+  // Handle update form input changes
+  const handleUpdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUpdateForm(prev => ({
+      ...prev,
+      [name]: parseFloat(value) || 0
+    }));
+  };
   
   // Handle goal update submission
   const updateGoals = () => {
@@ -56,10 +75,21 @@ const InBody = () => {
     toast.success("목표가 업데이트되었습니다!");
   };
   
-  // Function to schedule next inBody scan
-  const scheduleInBody = () => {
-    // In a real app, this would open a date picker or form
-    toast.success("인바디 스캔 예약이 열립니다!");
+  // Handle InBody update submission
+  const submitInBodyUpdate = () => {
+    const now = new Date();
+    const formattedDate = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+    
+    setInBodyData(prev => ({
+      ...prev,
+      weight: updateForm.weight,
+      muscleMass: updateForm.muscleMass,
+      bodyFat: updateForm.bodyFat,
+      lastUpdated: formattedDate,
+    }));
+    
+    setUpdateModalOpen(false);
+    toast.success("인바디 데이터가 업데이트되었습니다!");
   };
 
   return (
@@ -75,10 +105,10 @@ const InBody = () => {
             <h2 className="text-xl font-semibold">현재 상태</h2>
             <Button 
               className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
-              onClick={scheduleInBody}
+              onClick={() => setUpdateModalOpen(true)}
             >
-              <Calendar className="w-4 h-4 mr-1" />
-              다음 스캔 예약
+              <Plus className="w-4 h-4 mr-1" />
+              인바디 업데이트
             </Button>
           </div>
           <InBodyStats {...inBodyData} />
@@ -181,6 +211,77 @@ const InBody = () => {
             </Button>
           </div>
         </div>
+
+        {/* Update InBody Modal */}
+        <Dialog open={updateModalOpen} onOpenChange={setUpdateModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>인바디 데이터 업데이트</DialogTitle>
+              <DialogDescription>
+                현재 신체 측정 데이터를 입력하세요. 이 데이터는 목표 대비 현재 진행 상황을 추적하는 데 사용됩니다.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <label className="text-sm font-medium" htmlFor="weight">
+                  체중 (kg)
+                </label>
+                <input
+                  id="weight"
+                  name="weight"
+                  type="number"
+                  value={updateForm.weight}
+                  onChange={handleUpdateChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <label className="text-sm font-medium" htmlFor="muscleMass">
+                  근육량 (kg)
+                </label>
+                <input
+                  id="muscleMass"
+                  name="muscleMass"
+                  type="number"
+                  value={updateForm.muscleMass}
+                  onChange={handleUpdateChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <label className="text-sm font-medium" htmlFor="bodyFat">
+                  체지방률 (%)
+                </label>
+                <input
+                  id="bodyFat"
+                  name="bodyFat"
+                  type="number"
+                  value={updateForm.bodyFat}
+                  onChange={handleUpdateChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button 
+                variant="outline" 
+                onClick={() => setUpdateModalOpen(false)}
+              >
+                취소
+              </Button>
+              <Button 
+                className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
+                onClick={submitInBodyUpdate}
+              >
+                저장
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </Layout>
   );
