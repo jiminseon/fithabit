@@ -14,11 +14,11 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
   
   // Sample mini missions
   const miniMissions = [
-    '20 jumping jacks',
-    '10 push-ups',
-    '30-second plank',
-    '15 squats',
-    '10 lunges per leg'
+    '점핑 잭 20회',
+    '팔굽혀펴기 10회',
+    '30초 플랭크',
+    '스쿼트 15회',
+    '다리당 런지 10회'
   ];
   
   const [currentMission, setCurrentMission] = useState('');
@@ -27,7 +27,7 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
     setStatus('success');
     setShowMission(false);
     if (onStatusChange) onStatusChange('success');
-    toast.success("Great job! You've completed your workout for today!");
+    toast.success("잘했습니다! 오늘의 운동을 완료했어요!");
   };
   
   const markFail = () => {
@@ -38,49 +38,49 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
     setShowMission(true);
     setMissionCompleted(false);
     if (onStatusChange) onStatusChange('fail');
-    toast.error("Don't worry, complete your mini mission to recover!");
+    toast.error("괜찮아요! 미니 미션을 완료하고 회복하세요!");
   };
   
   const completeMission = () => {
     setMissionCompleted(true);
-    toast.success("Mini mission completed! You're back on track!");
+    toast.success("미니 미션 완료! 다시 정상 궤도에 올랐습니다!");
   };
 
   return (
     <div className="bg-white rounded-xl p-6 card-shadow">
-      <h3 className="text-xl font-semibold mb-4">Today's Workout</h3>
+      <h3 className="text-xl font-semibold mb-4">오늘의 운동</h3>
       
       {status === null ? (
         <div>
           <p className="text-fithabit-gray mb-4">
-            Did you complete your workout today?
+            오늘의 운동을 완료하셨나요?
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button 
               onClick={markSuccess}
               className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
             >
-              Success
+              성공
             </Button>
             <Button 
               onClick={markFail}
               variant="outline" 
               className="border-fithabit-gray text-fithabit-gray"
             >
-              Fail
+              실패
             </Button>
           </div>
         </div>
       ) : status === 'success' ? (
         <div className="text-center py-4">
-          <p className="text-green-600 font-semibold mb-2">Workout Completed! 🎉</p>
+          <p className="text-green-600 font-semibold mb-2">운동 완료! 🎉</p>
           <p className="text-fithabit-gray text-sm">
-            You're building great habits. Keep it up!
+            좋은 습관을 만들어가고 있어요. 계속 유지하세요!
           </p>
         </div>
       ) : showMission ? (
         <div className="border-2 border-fithabit-red rounded-lg p-4 animate-pulse-gentle">
-          <p className="font-medium mb-3">Mini Mission:</p>
+          <p className="font-medium mb-3">미니 미션:</p>
           <p className="text-xl font-bold mb-4">{currentMission}</p>
           
           {!missionCompleted ? (
@@ -88,17 +88,17 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
               onClick={completeMission}
               className="w-full bg-fithabit-red hover:bg-fithabit-red-dark text-white"
             >
-              I've Completed This!
+              완료했어요!
             </Button>
           ) : (
             <p className="text-green-600 font-semibold">
-              Great effort! You've redeemed yourself. 💪
+              좋은 노력이에요! 자신을 되찾았네요. 💪
             </p>
           )}
         </div>
       ) : (
         <p className="text-fithabit-gray">
-          Workout status: <span className="text-red-500 font-medium">Failed</span>
+          운동 상태: <span className="text-red-500 font-medium">실패</span>
         </p>
       )}
     </div>

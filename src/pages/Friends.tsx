@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { Layout } from '@/components/Layout/Layout';
 import { UserCharacter } from '@/components/Character/UserCharacter';
 import { Button } from '@/components/ui/button';
-import { Check, Plus } from 'lucide-react';
+import { Check, Plus, Trash } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface Friend {
   id: string;
@@ -27,13 +29,13 @@ const Friends = () => {
   const [friends, setFriends] = useState<Friend[]>([
     {
       id: '1',
-      name: 'Sarah Kim',
+      name: '김서연',
       status: 'success',
       successCount: 12,
       failCount: 3,
       points: 120,
       stealPoints: 10,
-      goalName: 'Lose 5kg',
+      goalName: '5kg 감량',
       goalProgress: 60,
       needsConfirmation: true,
       character: {
@@ -44,13 +46,13 @@ const Friends = () => {
     },
     {
       id: '2',
-      name: 'Mike Johnson',
+      name: '이민준',
       status: 'fail',
       successCount: 8,
       failCount: 7,
       points: 80,
       stealPoints: 15,
-      goalName: 'Run 5km daily',
+      goalName: '매일 5km 달리기',
       goalProgress: 40,
       needsConfirmation: false,
       character: {
@@ -62,7 +64,7 @@ const Friends = () => {
   const [friendRequests, setFriendRequests] = useState([
     {
       id: '3',
-      name: 'Emma Wilson',
+      name: '황지우',
     },
   ]);
   
@@ -76,6 +78,7 @@ const Friends = () => {
       }
       return friend;
     }));
+    toast.success("운동 완료 확인!");
   };
   
   const acceptFriendRequest = (requestId: string) => {
@@ -92,7 +95,7 @@ const Friends = () => {
       failCount: 0,
       points: 0,
       stealPoints: 5,
-      goalName: 'New Goal',
+      goalName: '새 목표',
       goalProgress: 0,
       needsConfirmation: false,
       character: {
@@ -103,20 +106,29 @@ const Friends = () => {
     // Add to friends and remove from requests
     setFriends([...friends, newFriend]);
     setFriendRequests(friendRequests.filter(r => r.id !== requestId));
+    toast.success(`${request.name}님의 친구 요청을 수락했습니다!`);
+  };
+  
+  const deleteFriend = (friendId: string) => {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+    
+    setFriends(friends.filter(f => f.id !== friendId));
+    toast.success(`${friend.name}님을 친구 목록에서 삭제했습니다.`);
   };
 
   return (
     <Layout>
       <div className="container-app">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">Your Friends</h1>
-          <p className="text-fithabit-gray">Stay motivated together and keep each other accountable.</p>
+          <h1 className="text-3xl font-bold mb-2">내 친구</h1>
+          <p className="text-fithabit-gray">함께 동기부여하고 서로 책임감을 갖도록 도와주세요.</p>
         </div>
         
         {/* Friend Requests */}
         {friendRequests.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Friend Requests</h2>
+            <h2 className="text-xl font-semibold mb-4">친구 요청</h2>
             <div className="space-y-3">
               {friendRequests.map(request => (
                 <div key={request.id} className="bg-white rounded-xl p-4 card-shadow flex justify-between items-center">
@@ -132,14 +144,14 @@ const Friends = () => {
                       onClick={() => acceptFriendRequest(request.id)}
                       className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
                     >
-                      Accept
+                      수락
                     </Button>
                     <Button 
                       size="sm" 
                       variant="outline"
                       className="border-fithabit-gray text-fithabit-gray"
                     >
-                      Decline
+                      거절
                     </Button>
                   </div>
                 </div>
@@ -151,10 +163,10 @@ const Friends = () => {
         {/* Friend List */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Your Connections</h2>
+            <h2 className="text-xl font-semibold">내 친구 목록</h2>
             <Button className="bg-fithabit-red hover:bg-fithabit-red-dark text-white">
               <Plus size={16} className="mr-1" />
-              Add Friend
+              친구 추가
             </Button>
           </div>
           
@@ -176,24 +188,24 @@ const Friends = () => {
                     <div className="flex-1">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div className="bg-gray-50 p-3 rounded">
-                          <p className="text-sm text-fithabit-gray">Status</p>
+                          <p className="text-sm text-fithabit-gray">상태</p>
                           <p className={`font-medium ${
                             friend.status === 'success' ? 'text-green-600' : 
                             friend.status === 'fail' ? 'text-red-600' : 'text-fithabit-gray'
                           }`}>
-                            {friend.status === 'success' ? 'Completed' : 
-                             friend.status === 'fail' ? 'Failed' : 'Not Logged'}
+                            {friend.status === 'success' ? '완료' : 
+                             friend.status === 'fail' ? '실패' : '미기록'}
                           </p>
                         </div>
                         <div className="bg-gray-50 p-3 rounded">
-                          <p className="text-sm text-fithabit-gray">Record</p>
+                          <p className="text-sm text-fithabit-gray">기록</p>
                           <p className="font-medium">
                             <span className="text-green-600">{friend.successCount}</span> / 
                             <span className="text-red-600">{friend.failCount}</span>
                           </p>
                         </div>
                         <div className="bg-gray-50 p-3 rounded">
-                          <p className="text-sm text-fithabit-gray">Points</p>
+                          <p className="text-sm text-fithabit-gray">포인트</p>
                           <p className="font-medium">{friend.points} pts</p>
                         </div>
                       </div>
@@ -211,21 +223,53 @@ const Friends = () => {
                         </div>
                       </div>
                       
-                      {friend.needsConfirmation && (
-                        <div className="bg-red-50 border border-fithabit-red p-3 rounded-lg flex justify-between items-center">
-                          <p className="text-sm">
-                            <span className="font-medium">{friend.name}</span> logged a workout success today.
-                          </p>
-                          <Button 
-                            size="sm"
-                            onClick={() => confirmWorkout(friend.id)}
-                            className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
-                          >
-                            <Check size={14} className="mr-1" />
-                            Confirm
-                          </Button>
-                        </div>
-                      )}
+                      <div className="flex justify-between">
+                        {friend.needsConfirmation ? (
+                          <div className="bg-red-50 border border-fithabit-red p-3 rounded-lg flex justify-between items-center flex-1">
+                            <p className="text-sm">
+                              <span className="font-medium">{friend.name}</span>님이 오늘의 운동 성공을 기록했습니다.
+                            </p>
+                            <Button 
+                              size="sm"
+                              onClick={() => confirmWorkout(friend.id)}
+                              className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
+                            >
+                              <Check size={14} className="mr-1" />
+                              확인
+                            </Button>
+                          </div>
+                        ) : <div></div>}
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              size="sm"
+                              variant="outline"
+                              className="border-red-400 text-red-500 hover:bg-red-50 ml-2"
+                            >
+                              <Trash size={14} className="mr-1" />
+                              삭제
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>정말로 친구를 삭제하시겠습니까?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {friend.name}님을 친구 목록에서 삭제합니다. 이 작업은 되돌릴 수 없습니다.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>취소</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => deleteFriend(friend.id)}
+                                className="bg-red-500 text-white hover:bg-red-600"
+                              >
+                                삭제
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -233,10 +277,10 @@ const Friends = () => {
             </div>
           ) : (
             <div className="text-center py-12 bg-white rounded-xl card-shadow">
-              <p className="text-fithabit-gray mb-4">You haven't added any friends yet.</p>
+              <p className="text-fithabit-gray mb-4">아직 친구를 추가하지 않았습니다.</p>
               <Button className="bg-fithabit-red hover:bg-fithabit-red-dark text-white">
                 <Plus size={16} className="mr-1" />
-                Find Friends
+                친구 찾기
               </Button>
             </div>
           )}

@@ -1,12 +1,14 @@
 
+import { useState } from 'react';
 import { Layout } from '@/components/Layout/Layout';
 import { InBodyStats } from '@/components/InBody/InBodyStats';
 import { Button } from '@/components/ui/button';
 import { Calendar, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 const InBody = () => {
-  // Sample data
-  const mockInBodyData = {
+  // State for inBody data
+  const [inBodyData, setInBodyData] = useState({
     weight: 68,
     weightGoal: 65,
     muscleMass: 32,
@@ -15,38 +17,76 @@ const InBody = () => {
     bodyFatGoal: 18,
     lastUpdated: '2023-05-10',
     nextScheduled: '2023-06-10',
-  };
+  });
   
+  // Form state for goals
+  const [formGoals, setFormGoals] = useState({
+    weightGoal: inBodyData.weightGoal,
+    muscleMassGoal: inBodyData.muscleMassGoal,
+    bodyFatGoal: inBodyData.bodyFatGoal,
+  });
+  
+  // Mock history data
   const mockHistory = [
     { date: '2023-05-10', weight: 68, muscleMass: 32, bodyFat: 22 },
     { date: '2023-04-10', weight: 69, muscleMass: 31.5, bodyFat: 23 },
     { date: '2023-03-10', weight: 70.5, muscleMass: 31, bodyFat: 24 },
   ];
   
-  const mockFeedback = "Great progress on reducing your body fat percentage! You're moving in the right direction. Try to increase your protein intake to help build more muscle mass while continuing your current cardio routine.";
+  // Mock AI feedback
+  const mockFeedback = "체지방 감소에 좋은 진전을 보이고 계십니다! 올바른 방향으로 나아가고 있습니다. 현재 유산소 운동을 계속하면서 근육량 증가를 위해 단백질 섭취를 늘려보세요.";
+  
+  // Handle form input changes
+  const handleGoalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormGoals(prev => ({
+      ...prev,
+      [name]: parseFloat(value) || 0
+    }));
+  };
+  
+  // Handle goal update submission
+  const updateGoals = () => {
+    setInBodyData(prev => ({
+      ...prev,
+      weightGoal: formGoals.weightGoal,
+      muscleMassGoal: formGoals.muscleMassGoal,
+      bodyFatGoal: formGoals.bodyFatGoal,
+    }));
+    toast.success("목표가 업데이트되었습니다!");
+  };
+  
+  // Function to schedule next inBody scan
+  const scheduleInBody = () => {
+    // In a real app, this would open a date picker or form
+    toast.success("인바디 스캔 예약이 열립니다!");
+  };
 
   return (
     <Layout>
       <div className="container-app">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-2">Your InBody Results</h1>
-          <p className="text-fithabit-gray">Track your physical progress over time.</p>
+          <h1 className="text-3xl font-bold mb-2">인바디 결과</h1>
+          <p className="text-fithabit-gray">시간에 따른 신체 변화를 추적하세요.</p>
         </div>
         
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Current Status</h2>
-            <Button className="bg-fithabit-red hover:bg-fithabit-red-dark text-white">
+            <h2 className="text-xl font-semibold">현재 상태</h2>
+            <Button 
+              className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
+              onClick={scheduleInBody}
+            >
               <Calendar className="w-4 h-4 mr-1" />
-              Schedule Next Scan
+              다음 스캔 예약
             </Button>
           </div>
-          <InBodyStats {...mockInBodyData} />
+          <InBodyStats {...inBodyData} />
         </div>
         
         {/* AI Feedback */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">AI Feedback</h2>
+          <h2 className="text-xl font-semibold mb-4">AI 피드백</h2>
           <div className="bg-white rounded-xl p-6 card-shadow">
             <div className="flex items-start gap-4">
               <div className="bg-fithabit-red text-white rounded-full p-2">
@@ -63,7 +103,7 @@ const InBody = () => {
                 </svg>
               </div>
               <div>
-                <h3 className="font-medium mb-2">Analysis of Your Progress</h3>
+                <h3 className="font-medium mb-2">진행 상황 분석</h3>
                 <p className="text-fithabit-gray">{mockFeedback}</p>
               </div>
             </div>
@@ -72,15 +112,15 @@ const InBody = () => {
         
         {/* History */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">History</h2>
+          <h2 className="text-xl font-semibold mb-4">기록</h2>
           <div className="bg-white rounded-xl overflow-hidden card-shadow">
             <table className="w-full">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">Weight (kg)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">Muscle Mass (kg)</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">Body Fat (%)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">날짜</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">체중 (kg)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">근육량 (kg)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-fithabit-gray-dark uppercase tracking-wider">체지방 (%)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-fithabit-gray-light">
@@ -99,36 +139,45 @@ const InBody = () => {
         
         {/* Set Goals */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Your Goals</h2>
+          <h2 className="text-xl font-semibold mb-4">목표 설정</h2>
           <div className="bg-white rounded-xl p-6 card-shadow">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div>
-                <label className="block text-sm font-medium mb-1">Weight Goal (kg)</label>
+                <label className="block text-sm font-medium mb-1">체중 목표 (kg)</label>
                 <input 
                   type="number" 
-                  defaultValue={mockInBodyData.weightGoal}
-                  className="input-primary w-full"
+                  name="weightGoal"
+                  value={formGoals.weightGoal}
+                  onChange={handleGoalChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Muscle Mass Goal (kg)</label>
+                <label className="block text-sm font-medium mb-1">근육량 목표 (kg)</label>
                 <input 
                   type="number" 
-                  defaultValue={mockInBodyData.muscleMassGoal}
-                  className="input-primary w-full"
+                  name="muscleMassGoal"
+                  value={formGoals.muscleMassGoal}
+                  onChange={handleGoalChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Body Fat Goal (%)</label>
+                <label className="block text-sm font-medium mb-1">체지방 목표 (%)</label>
                 <input 
                   type="number" 
-                  defaultValue={mockInBodyData.bodyFatGoal}
-                  className="input-primary w-full"
+                  name="bodyFatGoal"
+                  value={formGoals.bodyFatGoal}
+                  onChange={handleGoalChange}
+                  className="input-primary w-full px-3 py-2 border border-gray-300 rounded-md"
                 />
               </div>
             </div>
-            <Button className="bg-fithabit-red hover:bg-fithabit-red-dark text-white">
-              Update Goals
+            <Button 
+              className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
+              onClick={updateGoals}
+            >
+              목표 업데이트
             </Button>
           </div>
         </div>

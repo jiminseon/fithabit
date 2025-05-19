@@ -46,39 +46,39 @@ export const InBodyStats = ({
   return (
     <div className="bg-white rounded-xl p-6 card-shadow">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold">InBody Results</h3>
-        <div className="text-xs text-fithabit-gray">Last updated: {lastUpdated}</div>
+        <h3 className="text-xl font-semibold">인바디 결과</h3>
+        <div className="text-xs text-fithabit-gray">최근 업데이트: {lastUpdated}</div>
       </div>
       
       <div className="space-y-6">
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-fithabit-gray-dark font-medium">Weight</span>
-            <span className="text-fithabit-gray">{weight} kg / {weightGoal} kg goal</span>
+            <span className="text-fithabit-gray-dark font-medium">체중</span>
+            <span className="text-fithabit-gray">{weight} kg / {weightGoal} kg 목표</span>
           </div>
-          <Progress value={weightProgress} className="h-2 bg-fithabit-gray-light" indicatorClassName="bg-fithabit-red" />
+          <Progress value={weightProgress} className="h-2 bg-fithabit-gray-light" />
         </div>
         
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-fithabit-gray-dark font-medium">Muscle Mass</span>
-            <span className="text-fithabit-gray">{muscleMass} kg / {muscleMassGoal} kg goal</span>
+            <span className="text-fithabit-gray-dark font-medium">근육량</span>
+            <span className="text-fithabit-gray">{muscleMass} kg / {muscleMassGoal} kg 목표</span>
           </div>
-          <Progress value={muscleProgress} className="h-2 bg-fithabit-gray-light" indicatorClassName="bg-fithabit-red" />
+          <Progress value={muscleProgress} className="h-2 bg-fithabit-gray-light" />
         </div>
         
         <div>
           <div className="flex justify-between mb-2">
-            <span className="text-fithabit-gray-dark font-medium">Body Fat</span>
-            <span className="text-fithabit-gray">{bodyFat}% / {bodyFatGoal}% goal</span>
+            <span className="text-fithabit-gray-dark font-medium">체지방</span>
+            <span className="text-fithabit-gray">{bodyFat}% / {bodyFatGoal}% 목표</span>
           </div>
-          <Progress value={fatProgress} className="h-2 bg-fithabit-gray-light" indicatorClassName="bg-fithabit-red" />
+          <Progress value={fatProgress} className="h-2 bg-fithabit-gray-light" />
         </div>
       </div>
       
       <div className="mt-6 pt-4 border-t border-fithabit-gray-light">
         <p className="text-sm text-fithabit-gray">
-          <span className="font-medium text-fithabit-red">Next InBody:</span> {nextScheduled}
+          <span className="font-medium text-fithabit-red">다음 인바디:</span> {nextScheduled}
         </p>
       </div>
     </div>
