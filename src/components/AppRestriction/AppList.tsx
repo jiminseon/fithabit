@@ -20,9 +20,9 @@ export const AppList = () => {
     { id: '1', name: '인스타그램', icon: '📱', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
     { id: '2', name: '유튜브', icon: '📺', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
     { id: '3', name: '틱톡', icon: '🎵', restricted: false },
-    { id: '4', name: '트위터', icon: '🐦', restricted: false },
-    { id: '5', name: '페이스북', icon: '👤', restricted: false },
-    { id: '6', name: '넷플릭스', icon: '🎬', restricted: false },
+    { id: '4', name: '요기요', icon: '🍔', restricted: false },
+    { id: '5', name: '배달의 민족', icon: '🍗', restricted: false },
+    { id: '6', name: '쿠팡이츠', icon: '🍕', restricted: false },
   ]);
   
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
