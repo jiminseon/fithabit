@@ -1,21 +1,27 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Home, Users, Activity, Clock, User, Menu, X } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Home, Users, Activity, Clock, User, Menu, X, LogIn } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
   
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   const navItems = [
-    { name: 'Home', path: '/', icon: <Home className="w-5 h-5" /> },
-    { name: 'Friends', path: '/friends', icon: <Users className="w-5 h-5" /> },
-    { name: 'InBody', path: '/inbody', icon: <Activity className="w-5 h-5" /> },
-    { name: 'App Restriction', path: '/app-restriction', icon: <Clock className="w-5 h-5" /> },
-    { name: 'Character', path: '/character', icon: <User className="w-5 h-5" /> },
+    { name: '홈', path: '/', icon: <Home className="w-5 h-5" /> },
+    { name: '친구', path: '/friends', icon: <Users className="w-5 h-5" /> },
+    { name: '인바디', path: '/inbody', icon: <Activity className="w-5 h-5" /> },
+    { name: '앱 제한', path: '/app-restriction', icon: <Clock className="w-5 h-5" /> },
+    { name: '캐릭터', path: '/character', icon: <User className="w-5 h-5" /> },
   ];
 
   return (
@@ -24,16 +30,6 @@ export const Navbar = () => {
         <Link to="/" className="flex items-center">
           <span className="text-fithabit-red font-bold text-xl">FitHabit</span>
         </Link>
-        
-        {/* Mobile menu button */}
-        <div className="md:hidden">
-          <button 
-            onClick={toggleMenu}
-            className="text-fithabit-gray hover:text-fithabit-red"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
         
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6">
@@ -47,6 +43,27 @@ export const Navbar = () => {
               <span>{item.name}</span>
             </Link>
           ))}
+        </div>
+        
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={handleLoginClick}
+            variant="outline"
+            className="hidden md:flex items-center gap-1 border-fithabit-red text-fithabit-red hover:bg-fithabit-red hover:text-white"
+          >
+            <LogIn className="w-4 h-4" />
+            <span>로그인</span>
+          </Button>
+          
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button 
+              onClick={toggleMenu}
+              className="text-fithabit-gray hover:text-fithabit-red"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
       
@@ -65,6 +82,14 @@ export const Navbar = () => {
                 <span>{item.name}</span>
               </Link>
             ))}
+            <Button 
+              onClick={handleLoginClick}
+              variant="outline"
+              className="w-full flex items-center justify-center gap-1 mt-2 border-fithabit-red text-fithabit-red hover:bg-fithabit-red hover:text-white"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>로그인</span>
+            </Button>
           </div>
         </div>
       )}

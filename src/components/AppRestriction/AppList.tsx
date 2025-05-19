@@ -1,7 +1,8 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Check, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface App {
   id: string;
@@ -16,12 +17,12 @@ interface App {
 
 export const AppList = () => {
   const [apps, setApps] = useState<App[]>([
-    { id: '1', name: 'Instagram', icon: '📱', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
-    { id: '2', name: 'YouTube', icon: '📺', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
-    { id: '3', name: 'TikTok', icon: '🎵', restricted: false },
-    { id: '4', name: 'Twitter', icon: '🐦', restricted: false },
-    { id: '5', name: 'Facebook', icon: '👤', restricted: false },
-    { id: '6', name: 'Netflix', icon: '🎬', restricted: false },
+    { id: '1', name: '인스타그램', icon: '📱', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
+    { id: '2', name: '유튜브', icon: '📺', restricted: true, restrictedTime: { from: '22:00', to: '07:00' } },
+    { id: '3', name: '틱톡', icon: '🎵', restricted: false },
+    { id: '4', name: '트위터', icon: '🐦', restricted: false },
+    { id: '5', name: '페이스북', icon: '👤', restricted: false },
+    { id: '6', name: '넷플릭스', icon: '🎬', restricted: false },
   ]);
   
   const [selectedApps, setSelectedApps] = useState<string[]>([]);
@@ -29,6 +30,19 @@ export const AppList = () => {
     from: '22:00',
     to: '07:00',
   });
+  
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedApps = localStorage.getItem('restrictedApps');
+    if (savedApps) {
+      setApps(JSON.parse(savedApps));
+    }
+  }, []);
+
+  // Save to localStorage when apps change
+  useEffect(() => {
+    localStorage.setItem('restrictedApps', JSON.stringify(apps));
+  }, [apps]);
   
   const toggleAppSelection = (appId: string) => {
     if (selectedApps.includes(appId)) {
@@ -50,6 +64,7 @@ export const AppList = () => {
       return app;
     }));
     setSelectedApps([]);
+    toast.success("앱 제한이 적용되었습니다");
   };
   
   const removeRestriction = (appId: string) => {
@@ -63,12 +78,13 @@ export const AppList = () => {
       }
       return app;
     }));
+    toast.success("앱 제한이 해제되었습니다");
   };
 
   return (
     <div className="bg-white rounded-xl">
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-4">App Restrictions</h3>
+        <h3 className="text-xl font-semibold mb-4">앱 제한 설정</h3>
         
         <div className="flex flex-wrap gap-4 mb-4">
           {apps.map(app => (
@@ -89,7 +105,7 @@ export const AppList = () => {
         
         {selectedApps.length > 0 && (
           <div className="mb-6">
-            <p className="text-sm font-medium mb-2">Restrict selected apps from:</p>
+            <p className="text-sm font-medium mb-2">선택한 앱을 다음 시간에 제한:</p>
             <div className="flex gap-4 items-center">
               <input 
                 type="time" 
@@ -97,19 +113,20 @@ export const AppList = () => {
                 onChange={(e) => setRestrictionTime({...restrictionTime, from: e.target.value})}
                 className="border border-fithabit-gray-light rounded px-3 py-1"
               />
-              <span>to</span>
+              <span>부터</span>
               <input 
                 type="time" 
                 value={restrictionTime.to}
                 onChange={(e) => setRestrictionTime({...restrictionTime, to: e.target.value})}
                 className="border border-fithabit-gray-light rounded px-3 py-1"
               />
+              <span>까지</span>
               <Button 
                 onClick={applyRestrictions}
                 className="bg-fithabit-red hover:bg-fithabit-red-dark text-white"
               >
                 <Plus size={16} className="mr-1" />
-                Apply
+                적용하기
               </Button>
             </div>
           </div>
@@ -117,7 +134,7 @@ export const AppList = () => {
       </div>
       
       <div>
-        <h4 className="text-lg font-medium mb-3">Currently Restricted</h4>
+        <h4 className="text-lg font-medium mb-3">현재 제한된 앱</h4>
         {apps.filter(app => app.restricted).length > 0 ? (
           <div className="space-y-3">
             {apps.filter(app => app.restricted).map(app => (
@@ -127,7 +144,7 @@ export const AppList = () => {
                   <div>
                     <p className="font-medium">{app.name}</p>
                     <p className="text-xs text-fithabit-gray">
-                      Restricted: {app.restrictedTime?.from} - {app.restrictedTime?.to}
+                      제한 시간: {app.restrictedTime?.from} - {app.restrictedTime?.to}
                     </p>
                   </div>
                 </div>
@@ -143,7 +160,7 @@ export const AppList = () => {
             ))}
           </div>
         ) : (
-          <p className="text-fithabit-gray text-sm">No apps are currently restricted</p>
+          <p className="text-fithabit-gray text-sm">현재 제한된 앱이 없습니다</p>
         )}
       </div>
     </div>
