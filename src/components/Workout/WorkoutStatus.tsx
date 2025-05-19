@@ -6,9 +6,10 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 interface WorkoutStatusProps {
   onStatusChange?: (status: 'success' | 'fail' | null) => void;
+  onExpressionChange?: (expression: 'happy' | 'sad' | 'neutral') => void;
 }
 
-export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
+export const WorkoutStatus = ({ onStatusChange, onExpressionChange }: WorkoutStatusProps) => {
   const [status, setStatus] = useLocalStorage<'success' | 'fail' | null>('workoutStatusComponent', null);
   const [showMission, setShowMission] = useState(false);
   const [missionCompleted, setMissionCompleted] = useState(false);
@@ -28,6 +29,7 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
     setStatus('success');
     setShowMission(false);
     if (onStatusChange) onStatusChange('success');
+    if (onExpressionChange) onExpressionChange('happy');
     toast.success("잘했습니다! 오늘의 운동을 완료했어요!");
   };
   
@@ -39,11 +41,13 @@ export const WorkoutStatus = ({ onStatusChange }: WorkoutStatusProps) => {
     setShowMission(true);
     setMissionCompleted(false);
     if (onStatusChange) onStatusChange('fail');
+    if (onExpressionChange) onExpressionChange('sad');
     toast.error("괜찮아요! 미니 미션을 완료하고 회복하세요!");
   };
   
   const completeMission = () => {
     setMissionCompleted(true);
+    if (onExpressionChange) onExpressionChange('happy');
     toast.success("미니 미션 완료! 다시 정상 궤도에 올랐습니다!");
   };
 

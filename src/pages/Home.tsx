@@ -41,6 +41,7 @@ const Home = () => {
   const [showMission, setShowMission] = useState(false);
   const [missionCompleted, setMissionCompleted] = useState(false);
   const [currentMission, setCurrentMission] = useState('');
+  const [expression, setExpression] = useState<'happy' | 'sad' | 'neutral'>('neutral');
 
   // Sample mini missions
   const miniMissions = [
@@ -88,6 +89,7 @@ const Home = () => {
   const markSuccess = () => {
     setStatus('success');
     setShowMission(false);
+    setExpression('happy');
     toast.success("잘했습니다! 오늘의 운동을 완료했어요!");
   };
   
@@ -98,11 +100,13 @@ const Home = () => {
     setCurrentMission(randomMission);
     setShowMission(true);
     setMissionCompleted(false);
+    setExpression('sad');
     toast.error("괜찮아요! 미니 미션을 완료하고 회복하세요!");
   };
   
   const completeMission = () => {
     setMissionCompleted(true);
+    setExpression('happy'); // Set expression to happy when mission is completed
     toast.success("미니 미션 완료! 다시 정상 궤도에 올랐습니다!");
   };
 
@@ -112,12 +116,23 @@ const Home = () => {
     // Save to localStorage
     localStorage.setItem('workoutStatus', status || '');
   };
+  
+  const handleExpressionChange = (newExpression: 'happy' | 'sad' | 'neutral') => {
+    setExpression(newExpression);
+  };
 
   // Load data from localStorage on component mount
   useEffect(() => {
     const savedStatus = localStorage.getItem('workoutStatus');
     if (savedStatus) {
       setWorkoutStatus(savedStatus as 'success' | 'fail' | null);
+      
+      // Set initial expression based on workout status
+      if (savedStatus === 'success') {
+        setExpression('happy');
+      } else if (savedStatus === 'fail') {
+        setExpression('sad');
+      }
     }
   }, []);
 
@@ -133,7 +148,7 @@ const Home = () => {
           {/* Combined Character & Workout display */}
           <div className="bg-white rounded-xl p-6 card-shadow">
             <div className="flex flex-col items-center justify-center mb-6">
-              <UserCharacter size="lg" expression={workoutStatus === 'success' ? 'happy' : workoutStatus === 'fail' ? 'sad' : 'neutral'} />
+              <UserCharacter size="lg" expression={expression} />
               <p className="mt-4 text-lg font-medium">
                 {workoutStatus === 'success' 
                   ? "정말 자랑스러워요!" 

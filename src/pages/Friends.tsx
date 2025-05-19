@@ -71,9 +71,17 @@ const Friends = () => {
   const confirmWorkout = (friendId: string) => {
     setFriends(friends.map(friend => {
       if (friend.id === friendId) {
+        // Update friend status to success and related stats
         return {
           ...friend,
           needsConfirmation: false,
+          status: 'success',
+          successCount: friend.successCount + 1,
+          points: friend.points + 10,
+          character: {
+            ...friend.character,
+            expression: 'happy'
+          }
         };
       }
       return friend;
@@ -107,6 +115,15 @@ const Friends = () => {
     setFriends([...friends, newFriend]);
     setFriendRequests(friendRequests.filter(r => r.id !== requestId));
     toast.success(`${request.name}님의 친구 요청을 수락했습니다!`);
+  };
+  
+  const rejectFriendRequest = (requestId: string) => {
+    const request = friendRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    // Remove from requests
+    setFriendRequests(friendRequests.filter(r => r.id !== requestId));
+    toast.success(`${request.name}님의 친구 요청을 거절했습니다.`);
   };
   
   const deleteFriend = (friendId: string) => {
@@ -150,6 +167,7 @@ const Friends = () => {
                       size="sm" 
                       variant="outline"
                       className="border-fithabit-gray text-fithabit-gray"
+                      onClick={() => rejectFriendRequest(request.id)}
                     >
                       거절
                     </Button>
